@@ -9,7 +9,6 @@ class SolitaireSolver:
         self.initial_board = [stack[:] for stack in board]
     
     def print_board(self, board: List[List[int]], title: str = "Board"):
-        """Visualize the current board state."""
         print(f"\n{title}:")
         max_height = max(len(stack) for stack in board) if board else 0
         
@@ -26,7 +25,6 @@ class SolitaireSolver:
         print()
     
     def is_valid_stack(self, stack: List[int]) -> bool:
-        """Check if a stack follows the decreasing order rule."""
         if not stack:
             return True
         for i in range(len(stack) - 1):
@@ -37,32 +35,28 @@ class SolitaireSolver:
         return True
     
     def is_complete_stack(self, stack: List[int]) -> bool:
-        """Check if a stack is complete (T to 6)."""
         return len(stack) == 9 and stack == self.CARD_ORDER
     
     def can_place_on(self, card: int, target_stack: List[int]) -> bool:
-        """Check if a card can be placed on target stack."""
         if not target_stack:
             return True
         top_card = target_stack[-1]
         if top_card not in self.CARD_ORDER or card not in self.CARD_ORDER:
             return False
-        return self.CARD_ORDER.index(top_card) == self.CARD_ORDER.index(card) + 1
+        return self.CARD_ORDER.index(top_card) == self.CARD_ORDER.index(card) - 1
     
     def remove_complete_stacks(self, board: List[List[int]], verbose: bool = False) -> List[List[int]]:
-        """Remove any complete stacks from the board - KEEPS EMPTY SLOTS."""
         new_board = []
         for stack in board:
             if self.is_complete_stack(stack):
                 if verbose:
                     print(f"  ✓ Complete stack removed: {[self.CARD_NAMES[c] for c in stack]}")
-                new_board.append([])  # Keep the slot as empty!
+                new_board.append([])
             else:
                 new_board.append(stack[:])
         return new_board
     
     def get_movable_sequence(self, stack: List[int]) -> int:
-        """Get the number of cards that can be moved as a valid sequence from top."""
         if not stack:
             return 0
         count = 1
@@ -75,17 +69,14 @@ class SolitaireSolver:
         return count
     
     def board_to_tuple(self, board: List[List[int]]) -> tuple:
-        """Convert board to hashable tuple for state tracking."""
         return tuple(tuple(stack) for stack in board)
     
-    def solve_without_cheating(self, verbose: bool = False) -> Optional[List[Tuple[int, int, int]]]:
-        """Solve without using invalid positions."""
+    def solve_without_cheating(self) -> Optional[List[Tuple[int, int, int]]]:
         queue = deque([(self.initial_board, [])])
         visited = {self.board_to_tuple(self.initial_board)}
         
         while queue:
             board, moves = queue.popleft()
-            
             board = self.remove_complete_stacks(board)
             
             if all(len(stack) == 0 for stack in board):
@@ -118,15 +109,12 @@ class SolitaireSolver:
         return None
     
     def solve(self, allow_cheating: bool = True) -> Optional[List[Tuple[int, int, int]]]:
-        """Main solve method."""
         solution = self.solve_without_cheating()
         if solution is not None:
             return solution
-        
         return None
     
     def visualize_solution(self, solution: Optional[List[Tuple[int, int, int]]]):
-        """Play through and visualize the solution."""
         if solution is None:
             print("❌ No solution found!")
             return
@@ -143,7 +131,6 @@ class SolitaireSolver:
             card_names = [self.CARD_NAMES[c] for c in cards]
             print(f"Step {step}: Move {card_names} (x{amount}) from stack {from_idx} to stack {to_idx}")
             
-            # Check for complete stacks
             board = self.remove_complete_stacks(board, verbose=True)
             self.print_board(board, f"After Step {step}")
         
@@ -154,8 +141,6 @@ class SolitaireSolver:
 
 
 def run_tests():
-    """Run test cases to verify the solver."""
-    
     print("="*60)
     print("TEST 1: Simple Completion Test")
     print("="*60)
@@ -218,7 +203,6 @@ def run_tests():
 
 
 def interactive_mode():
-    """Allow user to input custom boards and test them."""
     print("\n" + "="*60)
     print("INTERACTIVE MODE")
     print("="*60)
@@ -258,9 +242,8 @@ def interactive_mode():
 
 
 if __name__ == "__main__":
-    print("🎴 MOLEK-SYNTEZ SOLITAIRE SOLVER TESTER 🎴\n")
+    print("🎴 MOLEK-SYNTEZ SOLITAIRE SOLVER 🎴\n")
     
-    # Run automated tests
     run_tests()
     
     # Uncomment to enable interactive mode
