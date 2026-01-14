@@ -51,7 +51,7 @@ class SolitaireSolver:
             if self.is_complete_stack(stack):
                 if verbose:
                     print(f"  ✓ Complete stack removed: {[self.CARD_NAMES[c] for c in stack]}")
-                new_board.append([])
+        #        new_board.append([]) # this removes the column entirely. Not an ideal solution - I'd prefer it if the stack remained but was not interactable, or if there were an indicator that there was a complete stack in the slot. However, that's beyond my limited python knowledge
             else:
                 new_board.append(stack[:])
         return new_board
@@ -79,7 +79,7 @@ class SolitaireSolver:
             board, moves = queue.popleft()
             board = self.remove_complete_stacks(board)
             
-            if all(len(stack) == 0 for stack in board):
+            if all(self.is_complete_stack(stack) or len(stack) == 0 for stack in board): # an alternate solution I was exploring. No longer necessary, but doesn't seem to hurt anything, and is a little more robust
                 return moves
             
             for from_idx in range(len(board)):
@@ -134,7 +134,7 @@ class SolitaireSolver:
             board = self.remove_complete_stacks(board, verbose=True)
             self.print_board(board, f"After Step {step}")
         
-        if all(len(stack) == 0 for stack in board):
+        if all(self.is_complete_stack(stack) or len(stack) == 0 for stack in board): # see line 82 for explanation
             print("🎉 PUZZLE SOLVED! All stacks cleared!")
         else:
             print("⚠️ Warning: Board not fully cleared")
@@ -248,3 +248,4 @@ if __name__ == "__main__":
     
     # Uncomment to enable interactive mode
     # interactive_mode()
+
